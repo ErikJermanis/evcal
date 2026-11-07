@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "evcal",
+      "runtimeExecutable": "just",
+      "runtimeArgs": ["start"],
+      "port": 8081
+    }
+  ]
+}

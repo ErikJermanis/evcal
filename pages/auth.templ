@@ -1,0 +1,49 @@
+package pages
+
+templ Unauthorized(problem string) {
+	@layout("Uređaj nije uparen", "") {
+		<section class="section" aria-labelledby="page-title">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Privatno</span>
+					<div>
+						<h1 id="page-title">Ovaj uređaj nije uparen.</h1>
+						<p>Događaji su vidljivi samo uparenim uređajima. Otvori jednokratnu poveznicu za uparivanje u ovom pregledniku ili je zalijepi ispod.</p>
+					</div>
+				</div>
+				<form class="paste-form pair-form" method="post" action="/pair">
+					if problem != "" {
+						<p class="form-error" role="alert">{ problem }</p>
+					}
+					<label class="mono" for="token">Poveznica za uparivanje</label>
+					<input id="token" name="token" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required/>
+					<div class="form-actions">
+						<button class="button button-primary" type="submit">Upari uređaj</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	}
+}
+
+templ Pair(token, name string) {
+	@layout("Uparivanje uređaja", "") {
+		<section class="section" aria-labelledby="page-title">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Uparivanje</span>
+					<div>
+						<h1 id="page-title">Upariti ovaj uređaj?</h1>
+						<p>Uređaj će biti spremljen kao <strong>{ name }</strong>. Poveznica vrijedi samo jednom.</p>
+					</div>
+				</div>
+				<form class="paste-form pair-form" method="post" action="/pair">
+					<input type="hidden" name="token" value={ token }/>
+					<div class="form-actions">
+						<button class="button button-primary" type="submit">Upari uređaj</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	}
+}

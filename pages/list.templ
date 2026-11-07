@@ -1,0 +1,134 @@
+package pages
+
+import (
+	"fmt"
+
+	"github.com/ErikJermanis/evcal/event"
+)
+
+templ List(d ListData) {
+	@layout("Događaji", d.Device) {
+		<section class="section" aria-labelledby="page-title">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Kvarner i okolica</span>
+					<div>
+						<h1 id="page-title">Događaji</h1>
+						<p>{ countLabel(d.UpcomingCount) }</p>
+					</div>
+				</div>
+				if d.Notice != "" {
+					<p class="notice" role="status">{ d.Notice }</p>
+				}
+				if d.UpcomingCount == 0 {
+					<div class="empty">
+						<p class="mono">Prazno</p>
+						<h2>Još nema spremljenih događaja.</h2>
+						<p>Kopiraj JSON događaja iz dnevnog ChatGPT pregleda i <a href="/new">dodaj ga ovdje</a>.</p>
+					</div>
+				}
+				for _, m := range d.Upcoming {
+					<section class="month" aria-label={ m.Label }>
+						<h2 class="month-heading">{ m.Label }</h2>
+						for _, e := range m.Events {
+							@eventItem(e, d.Today, d.Highlight[e.ID], d.Highlight[e.ID] && len(d.Highlight) == 1)
+						}
+					</section>
+				}
+				if len(d.Past) > 0 {
+					<details class="past" open?={ d.PastOpen }>
+						<summary>Prošli događaji ({ fmt.Sprint(len(d.Past)) })</summary>
+						for _, e := range d.Past {
+							@eventItem(e, d.Today, d.Highlight[e.ID], d.Highlight[e.ID] && len(d.Highlight) == 1)
+						}
+					</details>
+				}
+			</div>
+		</section>
+	}
+}
+
+// open expands the row; only a single just-saved event opens by itself.
+templ eventItem(e event.Event, today string, highlight, open bool) {
+	<details id={ anchor(e) } class={ "event", templ.KV("event-highlight", highlight) } open?={ open }>
+		<summary>
+			<span class="event-date">
+				<span class="mono">{ e.Weekday() }</span>
+				<strong>{ e.DayMonth() }</strong>
+				if e.Clock() != "" {
+					<span class="mono event-clock">{ e.Clock() }</span>
+				}
+				if e.Until() != "" {
+					<span class="mono event-until">{ e.Until() }</span>
+				}
+			</span>
+			<span class="event-body">
+				<span class="event-meta mono">
+					if e.Relative(today) != "" {
+						<span class="event-relative">{ e.Relative(today) }</span>
+					}
+					if e.Type != "" {
+						<span>{ e.Type }</span>
+					}
+					if e.City != "" {
+						<span>{ e.City }</span>
+					}
+				</span>
+				<h3>{ e.Title }</h3>
+				if summary(e) != "" {
+					<span class="event-summary">{ summary(e) }</span>
+				}
+			</span>
+			<span class="event-toggle" aria-hidden="true"></span>
+		</summary>
+		<div class="event-more">
+			<dl>
+				<div>
+					<dt>Kada</dt>
+					<dd>{ e.When() }</dd>
+				</div>
+				if e.Where() != "" {
+					<div>
+						<dt>Gdje</dt>
+						<dd>{ e.Where() }</dd>
+					</div>
+				}
+				if e.Price != "" {
+					<div>
+						<dt>Cijena i prijava</dt>
+						<dd>{ e.Price }</dd>
+					</div>
+				}
+				if e.Organizer != "" {
+					<div>
+						<dt>Organizator</dt>
+						<dd>{ e.Organizer }</dd>
+					</div>
+				}
+				if e.Audience != "" {
+					<div>
+						<dt>Tko dolazi</dt>
+						<dd>{ e.Audience }</dd>
+					</div>
+				}
+				if e.Why != "" {
+					<div>
+						<dt>Zašto ići</dt>
+						<dd>{ e.Why }</dd>
+					</div>
+				}
+			</dl>
+			<div class="event-actions">
+				if e.URL != "" {
+					<a class="button button-primary" href={ templ.SafeURL(e.URL) } target="_blank" rel="noopener noreferrer">
+						Najava ↗ <span class="button-note">{ e.Host() }</span>
+					</a>
+				}
+				<a class="button" href={ templ.SafeURL(editURL(e)) }>Uredi</a>
+				<form method="post" action={ templ.SafeURL(deleteURL(e)) } data-confirm={ "Obrisati događaj „" + e.Title + "”?" }>
+					<button class="button button-danger" type="submit">Obriši</button>
+				</form>
+			</div>
+		</div>
+	</details>
+}

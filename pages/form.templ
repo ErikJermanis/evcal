@@ -1,0 +1,53 @@
+package pages
+
+import "github.com/ErikJermanis/evcal/event"
+
+templ Form(d FormData) {
+	@layout(formTitle(d), d.Device) {
+		<section class="section" aria-labelledby="page-title">
+			<div class="wrap">
+				<div class="section-head">
+					if d.EditID != 0 {
+						<span class="eyebrow">Uređivanje</span>
+					} else {
+						<span class="eyebrow">Novi događaj</span>
+					}
+					<div>
+						<h1 id="page-title">{ formTitle(d) }</h1>
+						if d.EditID != 0 {
+							<p>{ d.Title }</p>
+						} else {
+							<p>Zalijepi JSON iz dnevnog ChatGPT pregleda. Može jedan događaj, više njih ili cijeli odgovor — spremit ću svaki događaj koji pronađem.</p>
+						}
+					</div>
+				</div>
+				<form class="paste-form" method="post" action={ templ.SafeURL(d.action()) }>
+					if d.Error != "" {
+						<p class="form-error" role="alert">{ d.Error }</p>
+					}
+					<label class="mono" for="json">JSON događaja</label>
+					<textarea id="json" name="json" rows="16" spellcheck="false" autocapitalize="off" autocomplete="off" required placeholder={ "{\n  \"title\": \"…\",\n  \"start_date\": \"2026-11-19\",\n  …\n}" }>{ d.Input }</textarea>
+					<div class="form-actions">
+						<button class="button button-primary" type="submit">Spremi</button>
+						if d.EditID == 0 {
+							<button class="button" type="button" data-paste hidden>Zalijepi iz međuspremnika</button>
+						}
+						<a class="button button-quiet" href="/">Odustani</a>
+					</div>
+				</form>
+				<details class="format-help">
+					<summary>Očekivani format</summary>
+					<p>Obavezni su <code>title</code> i <code>start_date</code>. Datumi su u obliku <code>GGGG-MM-DD</code>, vremena <code>HH:MM</code>; nepoznata polja mogu biti <code>null</code>. Ako događaj s istim datumom i nazivom ili poveznicom već postoji, ažurirat ću ga umjesto da dodam duplikat.</p>
+					<pre><code>{ event.Example }</code></pre>
+				</details>
+			</div>
+		</section>
+	}
+}
+
+func formTitle(d FormData) string {
+	if d.EditID != 0 {
+		return "Uredi događaj"
+	}
+	return "Dodaj događaj"
+}

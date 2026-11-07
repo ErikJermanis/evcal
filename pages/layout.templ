@@ -1,0 +1,49 @@
+package pages
+
+templ layout(title string, device string) {
+	<!DOCTYPE html>
+	<html lang="hr">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<meta name="robots" content="noindex, nofollow"/>
+			<meta name="theme-color" content="#1c1c16"/>
+			<title>{ title }</title>
+			<link rel="icon" href="/favicon.ico"/>
+			<link rel="icon" type="image/svg+xml" sizes="any" href="/assets/favicon.svg"/>
+			<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"/>
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+			<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+			<link rel="stylesheet" href={ asset("styles.css") }/>
+			<script src={ asset("app.js") } defer></script>
+		</head>
+		<body>
+			<a class="skip-link" href="#main">Preskoči na sadržaj</a>
+			<header class="site-header">
+				<div class="wrap header-inner">
+					<a class="brand" href="/" aria-label="Događaji — popis">
+						<img src="/assets/eriksoftware_logo.svg" width="42" height="42" alt=""/>
+						<span>Erik Software<small>Događaji</small></span>
+					</a>
+					if device != "" {
+						<nav aria-label="Glavna navigacija">
+							<a class="button button-primary" href="/new">+ Dodaj</a>
+						</nav>
+					}
+				</div>
+			</header>
+			<main id="main">
+				{ children... }
+			</main>
+			<footer class="site-footer">
+				<div class="wrap footer-inner">
+					<span>Erik Jermaniš / događaji za umrežavanje</span>
+					if device != "" {
+						<span>Uređaj: { device }</span>
+					}
+				</div>
+			</footer>
+		</body>
+	</html>
+}

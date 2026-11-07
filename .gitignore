@@ -1,0 +1,8 @@
+/bin/
+/data/
+/backups/
+.env
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.DS_Store
